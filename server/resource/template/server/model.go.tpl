@@ -1,14 +1,13 @@
-// 自动生成模板{{.StructName}}
-package autocode
+package model
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"santa/global"
 )
 
 // {{.StructName}} 结构体
 // 如果含有time.Time 请自行import time包
 type {{.StructName}} struct {
-      global.GVA_MODEL {{- range .Fields}}
+      global.MODEL {{- range .Fields}}
             {{- if ne .FieldType "string" }}
       {{.FieldName}}  *{{.FieldType}} `json:"{{.FieldJson}}" form:"{{.FieldJson}}" gorm:"column:{{.ColumnName}};comment:{{.Comment}}{{- if .DataType -}};type:{{.DataType}}{{- end }}"`
             {{- else }}
@@ -17,7 +16,6 @@ type {{.StructName}} struct {
 }
 
 {{ if .TableName }}
-// TableName {{.StructName}} 表名
 func ({{.StructName}}) TableName() string {
   return "{{.TableName}}"
 }

@@ -202,10 +202,10 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 				return err
 			}
 		}
-		err = injectionCode(autoCode.StructName, &injectionCodeMeta)
-		if err != nil {
-			return
-		}
+		// err = injectionCode(autoCode.StructName, &injectionCodeMeta)
+		// if err != nil {
+		// 	return
+		// }
 		// 保存生成信息
 		for _, data := range dataList {
 			if len(data.autoMoveFilePath) != 0 {
