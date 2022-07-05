@@ -7,7 +7,7 @@ aliyun-oss:
   base-path: yourBasePath
 autocode:
   transfer-restart: false 
-  root: /Users/mercy/go/esign
+  root: /Users/mercy/go/esign/santa
   server: /
   server-api: /api/v1
   server-initialize: /initialize

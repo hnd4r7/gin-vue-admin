@@ -6,6 +6,7 @@ import (
 	"santa/model/response"
 	"santa/model/request"
 
+	"go.uber.org/zap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,15 +16,15 @@ import (
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body autocode.{{.StructName}} true "创建{{.StructName}}"
+// @Param data body model.{{.StructName}} true "创建{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /{{.Abbreviation}} [post]
+// @Router /api/v1/{{.Abbreviation}} [post]
 func Create{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} autocode.{{.StructName}}
+	var {{.Abbreviation}} model.{{.StructName}}
 	_ = c.ShouldBindJSON(&{{.Abbreviation}})
-	if err := {{.Abbreviation}}Service.Create{{.StructName}}({{.Abbreviation}}); err != nil {
+	if err := service.Create{{.StructName}}({{.Abbreviation}}); err != nil {
         global.LOG.Error("创建失败!", zap.Any("err", err))
-		response.FailWithMessage("创建失败", c)
+		response.FailWithMessage("创建失败", err, c)
 	} else {
 		response.OkWithMessage("创建成功", c)
 	}
@@ -35,15 +36,15 @@ func Create{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body autocode.{{.StructName}} true "删除{{.StructName}}"
+// @Param data body model.{{.StructName}} true "删除{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// @Router /{{.Abbreviation}} [delete]
+// @Router /api/v1/{{.Abbreviation}}/{id} [delete]
 func Delete{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} autocode.{{.StructName}}
+	var {{.Abbreviation}} model.{{.StructName}}
 	_ = c.ShouldBindJSON(&{{.Abbreviation}})
-	if err := {{.Abbreviation}}Service.Delete{{.StructName}}({{.Abbreviation}}); err != nil {
+	if err := service.Delete{{.StructName}}({{.Abbreviation}}); err != nil {
         global.LOG.Error("删除失败!", zap.Any("err", err))
-		response.FailWithMessage("删除失败", c)
+		response.FailWithMessage("删除失败", err, c)
 	} else {
 		response.OkWithMessage("删除成功", c)
 	}
@@ -55,15 +56,15 @@ func Delete{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body autocode.{{.StructName}} true "更新{{.StructName}}"
+// @Param data body model.{{.StructName}} true "更新{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
-// @Router /{{.Abbreviation}} [put]
+// @Router /api/v1/{{.Abbreviation}}/{id} [put]
 func Update{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} autocode.{{.StructName}}
+	var {{.Abbreviation}} model.{{.StructName}}
 	_ = c.ShouldBindJSON(&{{.Abbreviation}})
-	if err := {{.Abbreviation}}Service.Update{{.StructName}}({{.Abbreviation}}); err != nil {
+	if err := service.Update{{.StructName}}({{.Abbreviation}}); err != nil {
         global.LOG.Error("更新失败!", zap.Any("err", err))
-		response.FailWithMessage("更新失败", c)
+		response.FailWithMessage("更新失败", err, c)
 	} else {
 		response.OkWithMessage("更新成功", c)
 	}
@@ -75,15 +76,15 @@ func Update{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query autocode.{{.StructName}} true "用id查询{{.StructName}}"
+// @Param data query model.{{.StructName}} true "用id查询{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
-// @Router /{{.Abbreviation}}/{id} [get]
+// @Router /api/v1/{{.Abbreviation}}/{id} [get]
 func Get{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} autocode.{{.StructName}}
+	var {{.Abbreviation}} model.{{.StructName}}
 	_ = c.ShouldBindQuery(&{{.Abbreviation}})
-	if err, re{{.Abbreviation}} := {{.Abbreviation}}Service.Get{{.StructName}}({{.Abbreviation}}.ID); err != nil {
+	if re{{.Abbreviation}}, err := service.Get{{.StructName}}({{.Abbreviation}}.ID); err != nil {
         global.LOG.Error("查询失败!", zap.Any("err", err))
-		response.FailWithMessage("查询失败", c)
+		response.FailWithMessage("查询失败", err, c)
 	} else {
 		response.OkWithData(gin.H{"re{{.Abbreviation}}": re{{.Abbreviation}}}, c)
 	}
@@ -95,15 +96,15 @@ func Get{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query autocodeReq.{{.StructName}}Search true "分页获取{{.StructName}}列表"
+// @Param data query request.{{.StructName}}Search true "分页获取{{.StructName}}列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /{{.Abbreviation}} [get]
+// @Router /api/v1/{{.Abbreviation}} [get]
 func List{{.StructName}} (c *gin.Context) {
-	var pageInfo autocodeReq.{{.StructName}}Search
+	var pageInfo request.{{.StructName}}Search
 	_ = c.ShouldBindQuery(&pageInfo)
-	if list, total, err := {{.Abbreviation}}Service.Get{{.StructName}}InfoList(pageInfo); err != nil {
+	if list, total, err := service.List{{.StructName}}(pageInfo); err != nil {
 	    global.LOG.Error("获取失败!", zap.Any("err", err))
-        response.FailWithMessage("获取失败", c)
+        response.FailWithMessage("获取失败", err, c)
     } else {
         response.OkWithDetailed(response.PageResult{
             List:     list,

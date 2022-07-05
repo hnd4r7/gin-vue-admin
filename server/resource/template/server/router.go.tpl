@@ -1,4 +1,4 @@
-package autocode
+package router
 
 import (
 	v1 "santa/api/v1"

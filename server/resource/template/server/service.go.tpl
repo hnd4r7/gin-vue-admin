@@ -28,7 +28,7 @@ func Get{{.StructName}}(id uint) ({{.Abbreviation}} model.{{.StructName}}, err e
 	return
 }
 
-func List{{.StructName}}(info request.{{.StructName}}Search) (list interface{}, total int64, err) {
+func List{{.StructName}}(info request.{{.StructName}}Search) (list interface{}, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	db := global.DB.Model(&model.{{.StructName}}{})

@@ -7,7 +7,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 )
 
-// 如果含有time.Time 请自行import time包
 type SysOperationRecord struct {
 	global.GVA_MODEL
 	Ip           string        `json:"ip" form:"ip" gorm:"column:ip;comment:请求ip"`                                   // 请求ip

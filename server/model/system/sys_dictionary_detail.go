@@ -5,7 +5,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 )
 
-// 如果含有time.Time 请自行import time包
 type SysDictionaryDetail struct {
 	global.GVA_MODEL
 	Label           string `json:"label" form:"label" gorm:"column:label;comment:展示值"`                                  // 展示值
