@@ -13,12 +13,22 @@ func Create{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 
 
 func Delete{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) {
+    cur, err := Get{{.StructName}}({{.Abbreviation}}.ID)
+	if err != nil {
+		return err
+	}
+ 	{{.Abbreviation}}.MODEL = cur.MODEL
 	err = global.DB.Delete(&{{.Abbreviation}}).Error
 	return err
 }
 
 
 func Update{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) {
+    cur, err := Get{{.StructName}}({{.Abbreviation}}.ID)
+	if err != nil {
+		return err
+	}
+	{{.Abbreviation}}.MODEL = cur.MODEL
 	err = global.DB.Save(&{{.Abbreviation}}).Error
 	return err
 }

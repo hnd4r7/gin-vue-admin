@@ -1,6 +1,7 @@
 package system
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -161,7 +162,7 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 	if err != nil {
 		return err
 	}
-	// meta, _ := json.Marshal(autoCode)
+	meta, _ := json.Marshal(autoCode)
 	// 写入文件前，先创建文件夹
 	if err = utils.CreateDir(needMkdir...); err != nil {
 		return err
@@ -223,29 +224,29 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 			return err
 		}
 	}
-	// if autoCode.AutoMoveFile || autoCode.AutoCreateApiToSql {
-	// 	if autoCode.TableName != "" {
-	// 		err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
-	// 			string(meta),
-	// 			autoCode.StructName,
-	// 			autoCode.Description,
-	// 			bf.String(),
-	// 			injectionCodeMeta.String(),
-	// 			autoCode.TableName,
-	// 			idBf.String(),
-	// 		)
-	// 	} else {
-	// 		err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
-	// 			string(meta),
-	// 			autoCode.StructName,
-	// 			autoCode.Description,
-	// 			bf.String(),
-	// 			injectionCodeMeta.String(),
-	// 			autoCode.StructName,
-	// 			idBf.String(),
-	// 		)
-	// 	}
-	// }
+	if autoCode.AutoMoveFile || autoCode.AutoCreateApiToSql {
+		if autoCode.TableName != "" {
+			err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
+				string(meta),
+				autoCode.StructName,
+				autoCode.Description,
+				bf.String(),
+				"",
+				autoCode.TableName,
+				idBf.String(),
+			)
+		} else {
+			err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
+				string(meta),
+				autoCode.StructName,
+				autoCode.Description,
+				bf.String(),
+				"",
+				autoCode.StructName,
+				idBf.String(),
+			)
+		}
+	}
 	if err != nil {
 		return err
 	}
