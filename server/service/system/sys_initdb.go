@@ -3,7 +3,6 @@ package system
 import (
 	"database/sql"
 	"fmt"
-	"path/filepath"
 
 	uuid "github.com/satori/go.uuid"
 
@@ -166,6 +165,5 @@ func (initDBService *InitDBService) InitDB(conf request.InitDB) error {
 	if err = initDBService.writeConfig(global.GVA_VP, MysqlConfig); err != nil {
 		return err
 	}
-	global.GVA_CONFIG.AutoCode.Root, _ = filepath.Abs("..")
 	return nil
 }

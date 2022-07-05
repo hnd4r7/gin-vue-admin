@@ -6,9 +6,9 @@ aliyun-oss:
   bucket-url: yourBucketUrl
   base-path: yourBasePath
 autocode:
-  transfer-restart: true
-  root: /Users/mercy/go/gin-vue-admin
-  server: /server
+  transfer-restart: false 
+  root: /Users/mercy/go/esign
+  server: /
   server-api: /api/v1
   server-initialize: /initialize
   server-model: /model

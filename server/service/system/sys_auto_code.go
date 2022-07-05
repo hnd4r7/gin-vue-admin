@@ -1,7 +1,6 @@
 package system
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -162,7 +161,7 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 	if err != nil {
 		return err
 	}
-	meta, _ := json.Marshal(autoCode)
+	// meta, _ := json.Marshal(autoCode)
 	// 写入文件前，先创建文件夹
 	if err = utils.CreateDir(needMkdir...); err != nil {
 		return err
@@ -170,7 +169,7 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 
 	// 生成文件
 	for _, value := range dataList {
-		f, err := os.OpenFile(value.autoCodePath, os.O_CREATE|os.O_WRONLY, 0755)
+		f, err := os.Create(value.autoCodePath)
 		if err != nil {
 			return err
 		}
@@ -187,7 +186,7 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 	}()
 	bf := strings.Builder{}
 	idBf := strings.Builder{}
-	injectionCodeMeta := strings.Builder{}
+	// injectionCodeMeta := strings.Builder{}
 	for _, id := range ids {
 		idBf.WriteString(strconv.Itoa(int(id)))
 		idBf.WriteString(";")
@@ -224,29 +223,29 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 			return err
 		}
 	}
-	if autoCode.AutoMoveFile || autoCode.AutoCreateApiToSql {
-		if autoCode.TableName != "" {
-			err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
-				string(meta),
-				autoCode.StructName,
-				autoCode.Description,
-				bf.String(),
-				injectionCodeMeta.String(),
-				autoCode.TableName,
-				idBf.String(),
-			)
-		} else {
-			err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
-				string(meta),
-				autoCode.StructName,
-				autoCode.Description,
-				bf.String(),
-				injectionCodeMeta.String(),
-				autoCode.StructName,
-				idBf.String(),
-			)
-		}
-	}
+	// if autoCode.AutoMoveFile || autoCode.AutoCreateApiToSql {
+	// 	if autoCode.TableName != "" {
+	// 		err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
+	// 			string(meta),
+	// 			autoCode.StructName,
+	// 			autoCode.Description,
+	// 			bf.String(),
+	// 			injectionCodeMeta.String(),
+	// 			autoCode.TableName,
+	// 			idBf.String(),
+	// 		)
+	// 	} else {
+	// 		err = AutoCodeHistoryServiceApp.CreateAutoCodeHistory(
+	// 			string(meta),
+	// 			autoCode.StructName,
+	// 			autoCode.Description,
+	// 			bf.String(),
+	// 			injectionCodeMeta.String(),
+	// 			autoCode.StructName,
+	// 			idBf.String(),
+	// 		)
+	// 	}
+	// }
 	if err != nil {
 		return err
 	}
