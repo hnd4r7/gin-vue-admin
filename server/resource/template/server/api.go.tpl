@@ -20,7 +20,7 @@ import (
 // @Produce application/json
 // @Param data body model.{{.StructName}} true "创建{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/v1/{{.Abbreviation}} [post]
+// @Router /api/v1/{{.UrlPath}} [post]
 func Create{{.StructName}}(c *gin.Context) {
 	var {{.Abbreviation}} model.{{.StructName}}
 	err := c.ShouldBindJSON(&{{.Abbreviation}})
@@ -45,21 +45,14 @@ func Create{{.StructName}}(c *gin.Context) {
 // @Param id path int true "ID"
 // @Param data body model.{{.StructName}} true "删除{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// @Router /api/v1/{{.Abbreviation}}/{id} [delete]
+// @Router /api/v1/{{.UrlPath}}/{id} [delete]
 func Delete{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} model.{{.StructName}}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		response.FailWithMessage("id不正确", err, c)
 		return
 	}
-	err = c.ShouldBindJSON(&{{.Abbreviation}})
-	if err != nil {
-		response.FailWithMessage("参数错误", err, c)
-		return
-	}
-	{{.Abbreviation}}.ID = uint(id)
-	if err := service.Delete{{.StructName}}({{.Abbreviation}}); err != nil {
+	if err := service.Delete{{.StructName}}(id); err != nil {
         global.LOG.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", err, c)
 	} else {
@@ -76,7 +69,7 @@ func Delete{{.StructName}}(c *gin.Context) {
 // @Param id path int true "ID"
 // @Param data body model.{{.StructName}} true "更新{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
-// @Router /api/v1/{{.Abbreviation}}/{id} [put]
+// @Router /api/v1/{{.UrlPath}}/{id} [put]
 func Update{{.StructName}}(c *gin.Context) {
 	var {{.Abbreviation}} model.{{.StructName}}
 	id, err := strconv.Atoi(c.Param("id"))
@@ -89,7 +82,7 @@ func Update{{.StructName}}(c *gin.Context) {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
-	{{.Abbreviation}}.ID = uint(id)
+	{{.Abbreviation}}.ID = id
 	if err := service.Update{{.StructName}}({{.Abbreviation}}); err != nil {
         global.LOG.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败", err, c)
@@ -102,15 +95,17 @@ func Update{{.StructName}}(c *gin.Context) {
 // @Tags {{.StructName}}
 // @Summary 用id查询{{.StructName}}
 // @Security ApiKeyAuth
-// @accept application/json
+// @Param id path int true "ID"
 // @Produce application/json
-// @Param data query model.{{.StructName}} true "用id查询{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
-// @Router /api/v1/{{.Abbreviation}}/{id} [get]
+// @Router /api/v1/{{.UrlPath}}/{id} [get]
 func Get{{.StructName}}(c *gin.Context) {
-	var {{.Abbreviation}} model.{{.StructName}}
-	_ = c.ShouldBindQuery(&{{.Abbreviation}})
-	if re{{.Abbreviation}}, err := service.Get{{.StructName}}({{.Abbreviation}}.ID); err != nil {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.FailWithMessage("id不正确", err, c)
+		return
+	}
+	if re{{.Abbreviation}}, err := service.Get{{.StructName}}(id); err != nil {
         global.LOG.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", err, c)
 	} else {
@@ -126,7 +121,7 @@ func Get{{.StructName}}(c *gin.Context) {
 // @Produce application/json
 // @Param data query request.{{.StructName}}Search true "分页获取{{.StructName}}列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/v1/{{.Abbreviation}} [get]
+// @Router /api/v1/{{.UrlPath}} [get]
 func List{{.StructName}} (c *gin.Context) {
 	var pageInfo request.{{.StructName}}Search
 	err := c.ShouldBindQuery(&pageInfo)

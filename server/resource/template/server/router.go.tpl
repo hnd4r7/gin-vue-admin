@@ -7,7 +7,7 @@ import (
 )
 
 func Init{{.StructName}}Router(Router *gin.RouterGroup) {
-	{{.Abbreviation}}Router := Router.Group("{{.Abbreviation}}")
+	{{.Abbreviation}}Router := Router.Group("{{.UrlPath}}")
 	{
 		{{.Abbreviation}}Router.GET(":id", v1.Get{{.StructName}})
 		{{.Abbreviation}}Router.GET("", v1.List{{.StructName}})

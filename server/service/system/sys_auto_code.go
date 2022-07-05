@@ -155,9 +155,9 @@ func (autoCodeService *AutoCodeService) PreviewTemp(autoCode system.AutoCodeStru
 
 func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruct, ids ...uint) (err error) {
 	// 增加判断: 重复创建struct
-	if autoCode.AutoMoveFile && AutoCodeHistoryServiceApp.Repeat(autoCode.StructName) {
-		return RepeatErr
-	}
+	// if autoCode.AutoMoveFile && AutoCodeHistoryServiceApp.Repeat(autoCode.StructName) {
+	// 	return RepeatErr
+	// }
 	dataList, fileList, needMkdir, err := autoCodeService.getNeedList(&autoCode)
 	if err != nil {
 		return err

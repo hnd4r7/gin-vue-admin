@@ -12,13 +12,9 @@ func Create{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 }
 
 
-func Delete{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) {
-    cur, err := Get{{.StructName}}({{.Abbreviation}}.ID)
-	if err != nil {
-		return err
-	}
- 	{{.Abbreviation}}.MODEL = cur.MODEL
-	err = global.DB.Delete(&{{.Abbreviation}}).Error
+func Delete{{.StructName}}(id int) (err error) {
+    var {{.Abbreviation}} model.{{.StructName}}
+	err = global.DB.Where("id = ?", id).Delete(&{{.Abbreviation}}).Error
 	return err
 }
 
@@ -33,7 +29,7 @@ func Update{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 	return err
 }
 
-func Get{{.StructName}}(id uint) ({{.Abbreviation}} model.{{.StructName}}, err error) {
+func Get{{.StructName}}(id int) ({{.Abbreviation}} model.{{.StructName}}, err error) {
 	err = global.DB.Where("id = ?", id).First(&{{.Abbreviation}}).Error
 	return
 }

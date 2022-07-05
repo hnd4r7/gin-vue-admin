@@ -1,10 +1,12 @@
 package system
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
 	"os"
+	"unicode"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
@@ -117,6 +119,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+	a.UrlPath = ToPath(a.Abbreviation)
 	autoCode, err := autoCodeService.PreviewTemp(a)
 	if err != nil {
 		global.GVA_LOG.Error("预览失败!", zap.Any("err", err))
@@ -124,6 +127,19 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 	} else {
 		response.OkWithDetailed(gin.H{"autoCode": autoCode}, "预览成功", c)
 	}
+}
+func ToPath(a string) string {
+	var b bytes.Buffer
+	last := 0
+	for i, r := range a {
+		if unicode.IsUpper(r) {
+			b.WriteString(a[last:i])
+			b.Write([]byte{'/', byte(unicode.ToLower(r))})
+			last = i + 1
+		}
+	}
+	b.WriteString(a[last:])
+	return b.String()
 }
 
 // @Tags AutoCode
@@ -141,6 +157,7 @@ func (autoApi *AutoCodeApi) CreateTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+	a.UrlPath = ToPath(a.Abbreviation)
 	var apiIds []uint
 	if a.AutoCreateApiToSql {
 		if ids, err := autoCodeService.AutoCreateApi(&a); err != nil {
