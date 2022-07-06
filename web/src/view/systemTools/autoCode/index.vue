@@ -414,7 +414,7 @@ export default {
                 dataTypeLong: item.dataTypeLong,
                 columnName: item.columnName,
                 comment: item.columnComment,
-                fieldSearchType: '',
+                fieldSearchType: '=',
                 dictType: ''
               })
             }

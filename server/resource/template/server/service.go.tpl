@@ -34,11 +34,9 @@ func Get{{.StructName}}(id int) ({{.Abbreviation}} model.{{.StructName}}, err er
 	return
 }
 
-func List{{.StructName}}(info request.{{.StructName}}Search) (list interface{}, total int64, err error) {
-	limit := info.PageSize
-	offset := info.PageSize * (info.Page - 1)
+func List{{.StructName}}(info request.{{.StructName}}Search) (list []*model.{{.StructName}}, total int64, err error) {
 	db := global.DB.Model(&model.{{.StructName}}{})
-    var {{.Abbreviation}}s []model.{{.StructName}}
+    var {{.Abbreviation}}s []*model.{{.StructName}}
         {{- range .Fields}}
             {{- if .FieldSearchType}}
                 {{- if eq .FieldType "string" }}
@@ -68,6 +66,11 @@ func List{{.StructName}}(info request.{{.StructName}}Search) (list interface{}, 
 	if err!=nil {
     	return
     }
-	err = db.Limit(limit).Offset(offset).Find(&{{.Abbreviation}}s).Error
+    if info.Page != -1 {
+		limit := info.PageSize
+		offset := info.PageSize * (info.Page - 1)
+		db = db.Limit(limit).Offset(offset)
+	}
+	err = db.Find(&{{.Abbreviation}}s).Error
 	return {{.Abbreviation}}s, total, err
 }
