@@ -12,15 +12,13 @@ func Create{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 }
 
 
-func Delete{{.StructName}}(id int) (err error) {
+func Delete{{.StructName}}({{ .PathVars | join ", " }} int) (err error) {
     var {{.Abbreviation}} model.{{.StructName}}
-	err = global.DB.Where("id = ?", id).Delete(&{{.Abbreviation}}).Error
-	return err
+	return global.DB{{range .PathVars }}.Where("{{snakecase .}} = ?", {{.}}){{- end}}.Delete(&{{.Abbreviation}}).Error
 }
 
-
-func Update{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) {
-    cur, err := Get{{.StructName}}({{.Abbreviation}}.ID)
+func Update{{.StructName}}({{ .PathVars | join ", " }} int, {{.Abbreviation}} model.{{.StructName}}) (err error) {
+    cur, err := Get{{.StructName}}({{ .PathVars | join ", " }})
 	if err != nil {
 		return err
 	}
@@ -29,9 +27,9 @@ func Update{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 	return err
 }
 
-func Get{{.StructName}}(id int) ({{.Abbreviation}} model.{{.StructName}}, err error) {
-	err = global.DB.Where("id = ?", id).First(&{{.Abbreviation}}).Error
-	return
+func Get{{.StructName}}({{ .PathVars | join ", " }} int) ({{.Abbreviation}} model.{{.StructName}}, err error) {
+	 err = global.DB{{range .PathVars }}.Where("{{snakecase .}} = ?", {{.}}){{- end}}.First(&{{.Abbreviation}}).Error
+     return
 }
 
 func List{{.StructName}}(info request.{{.StructName}}Search) (list []*model.{{.StructName}}, total int64, err error) {

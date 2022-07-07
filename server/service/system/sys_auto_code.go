@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Masterminds/sprig"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
@@ -444,7 +446,41 @@ func (autoCodeService *AutoCodeService) getNeedList(autoCode *system.AutoCodeStr
 	}
 	// 生成 *Template, 填充 template 字段
 	for index, value := range dataList {
-		dataList[index].template, err = template.ParseFiles(value.locationPath)
+		temp := template.New(filepath.Base(value.locationPath)).Funcs(sprig.TxtFuncMap()).Funcs(template.FuncMap{
+			"Cap": func(a string) string {
+				var b bytes.Buffer
+				b.Write([]byte(strings.ToUpper(a[:1])))
+				b.Write([]byte(a[1:]))
+				return b.String()
+			},
+			"SubstringAfterLast": func(str string, sep string) string {
+				idx := strings.LastIndex(str, sep)
+				if idx == -1 {
+					return str
+				}
+				return str[idx+len(sep):]
+			},
+			"SubstringBefore": func(str string, sep string) string {
+				idx := strings.Index(str, sep)
+				if idx == -1 {
+					return str
+				}
+				return str[:idx]
+			},
+			"ReplaceCurlyToColon": func(str string) string {
+				var b bytes.Buffer
+				for _, r := range str {
+					if r == '{' {
+						b.WriteRune(':')
+					} else if r == '}' {
+					} else {
+						b.WriteRune(r)
+					}
+				}
+				return b.String()
+			},
+		})
+		dataList[index].template, err = temp.ParseFiles(value.locationPath)
 		if err != nil {
 			return nil, nil, nil, err
 		}

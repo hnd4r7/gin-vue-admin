@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"unicode"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -119,7 +120,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars, a.UrlPathRmLast, a.PathVarsRmLast = ToPath(a.Abbreviation)
 	autoCode, err := autoCodeService.PreviewTemp(a)
 	if err != nil {
 		global.GVA_LOG.Error("预览失败!", zap.Any("err", err))
@@ -128,18 +129,41 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 		response.OkWithDetailed(gin.H{"autoCode": autoCode}, "预览成功", c)
 	}
 }
-func ToPath(a string) string {
-	var b bytes.Buffer
-	last := 0
-	for i, r := range a {
+
+func ToPath(abbr string) (url string, pathVars []string, rmLastUrl string, rmLast []string) {
+	var rawVar []string
+	var offset int
+	for i, r := range abbr {
 		if unicode.IsUpper(r) {
-			b.WriteString(a[last:i])
-			b.Write([]byte{'/', byte(unicode.ToLower(r))})
-			last = i + 1
+			rawVar = append(rawVar, abbr[offset:i])
+			offset = i
 		}
 	}
-	b.WriteString(a[last:])
-	return b.String()
+	rawVar = append(rawVar, abbr[offset:])
+
+	for _, str := range rawVar {
+		pathVars = append(pathVars, strings.TrimSuffix(strings.ToLower(str), "s")) // TODO: Tolower...
+	}
+
+	var b bytes.Buffer
+	for _, str := range pathVars {
+		b.WriteString(fmt.Sprintf("%s/{%sId}/", str, str))
+	}
+	url = strings.TrimSuffix(b.String(), "/")
+
+	var addIdVars []string
+	for _, v := range pathVars {
+		addIdVars = append(addIdVars, fmt.Sprintf("%sId", v))
+	}
+
+	var b2 bytes.Buffer
+	for _, str := range pathVars[:len(pathVars)-1] {
+		b2.WriteString(fmt.Sprintf("%s/{%sId}/", str, str))
+	}
+	b2.WriteString(pathVars[len(pathVars)-1])
+	rmLastUrl = strings.TrimSuffix(b2.String(), "/")
+
+	return url, addIdVars, rmLastUrl, addIdVars[:len(addIdVars)-1]
 }
 
 // @Tags AutoCode
@@ -157,7 +181,7 @@ func (autoApi *AutoCodeApi) CreateTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars, a.UrlPathRmLast, a.PathVarsRmLast = ToPath(a.Abbreviation)
 	var apiIds []uint
 	if a.AutoCreateApiToSql {
 		if ids, err := autoCodeService.AutoCreateApi(&a); err != nil {

@@ -18,16 +18,29 @@ import (
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
+{{- range .PathVarsRmLast }}
+// @Param {{.}} path int true "{{.}}"
+{{- end }}
 // @Param data body model.{{.StructName}} true "创建{{.StructName}}"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/v1/{{.UrlPath}} [post]
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
+// @Router /api/v1/{{.UrlPathRmLast}} [post]
 func Create{{.StructName}}(c *gin.Context) {
+	{{- range .PathVarsRmLast }}
+	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
+	if err != nil {
+		response.FailWithMessage("{{.}}格式错误", err, c)
+		return
+	}
+	{{- end }}
 	var {{.Abbreviation}} model.{{.StructName}}
-	err := c.ShouldBindJSON(&{{.Abbreviation}})
+	err {{ if eq (len .PathVarsRmLast) 0 }}:{{end}}= c.ShouldBindJSON(&{{.Abbreviation}})
 	if err != nil {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
+	{{- range .PathVarsRmLast }}
+	{{$.Abbreviation}}.{{Cap .}} = &{{.}}
+	{{- end }}
 	if err := service.Create{{.StructName}}({{.Abbreviation}}); err != nil {
         global.LOG.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败", err, c)
@@ -41,18 +54,22 @@ func Create{{.StructName}}(c *gin.Context) {
 // @Summary 删除{{.StructName}}
 // @Security ApiKeyAuth
 // @accept application/json
-// @Produce application/json 
-// @Param id path int true "ID"
+// @Produce application/json
+{{- range .PathVars }}
+// @Param {{.}} path int true "{{.}}"
+{{- end }}
 // @Param data body model.{{.StructName}} true "删除{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// @Router /api/v1/{{.UrlPath}}/{id} [delete]
+// @Router /api/v1/{{.UrlPath}} [delete]
 func Delete{{.StructName}}(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	{{- range .PathVars }}
+	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
 	if err != nil {
-		response.FailWithMessage("id不正确", err, c)
+		response.FailWithMessage("{{.}}格式错误", err, c)
 		return
 	}
-	if err := service.Delete{{.StructName}}(id); err != nil {
+	{{- end }}
+	if err := service.Delete{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
         global.LOG.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", err, c)
 	} else {
@@ -66,24 +83,27 @@ func Delete{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param id path int true "ID"
+{{- range .PathVars }}
+// @Param {{.}} path int true "{{.}}"
+{{- end }}
 // @Param data body model.{{.StructName}} true "更新{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
-// @Router /api/v1/{{.UrlPath}}/{id} [put]
+// @Router /api/v1/{{.UrlPath}} [put]
 func Update{{.StructName}}(c *gin.Context) {
 	var {{.Abbreviation}} model.{{.StructName}}
-	id, err := strconv.Atoi(c.Param("id"))
+	{{- range .PathVars }}
+	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
 	if err != nil {
-		response.FailWithMessage("id不正确", err, c)
+		response.FailWithMessage("{{.}}格式错误", err, c)
 		return
 	}
+	{{- end }}
 	err = c.ShouldBindJSON(&{{.Abbreviation}})
 	if err != nil {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
-	{{.Abbreviation}}.ID = id
-	if err := service.Update{{.StructName}}({{.Abbreviation}}); err != nil {
+	if err := service.Update{{.StructName}}({{ .PathVars | join ", " }}, {{.Abbreviation}}); err != nil {
         global.LOG.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败", err, c)
 	} else {
@@ -95,17 +115,21 @@ func Update{{.StructName}}(c *gin.Context) {
 // @Tags {{.StructName}}
 // @Summary 用id查询{{.StructName}}
 // @Security ApiKeyAuth
-// @Param id path int true "ID"
+{{- range .PathVars }}
+// @Param {{.}} path int true "{{.}}"
+{{- end }}
 // @Produce application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
-// @Router /api/v1/{{.UrlPath}}/{id} [get]
+// @Router /api/v1/{{.UrlPath}} [get]
 func Get{{.StructName}}(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	{{- range .PathVars }}
+	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
 	if err != nil {
-		response.FailWithMessage("id不正确", err, c)
+		response.FailWithMessage("{{.}}格式错误", err, c)
 		return
 	}
-	if re{{.Abbreviation}}, err := service.Get{{.StructName}}(id); err != nil {
+	{{- end }}
+	if re{{.Abbreviation}}, err := service.Get{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
         global.LOG.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", err, c)
 	} else {
