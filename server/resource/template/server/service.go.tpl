@@ -14,7 +14,7 @@ func Create{{.StructName}}({{.Abbreviation}} model.{{.StructName}}) (err error) 
 
 func Delete{{.StructName}}({{ .PathVars | join ", " }} int) (err error) {
     var {{.Abbreviation}} model.{{.StructName}}
-	return global.DB{{range .PathVars }}.Where("{{snakecase .}} = ?", {{.}}){{- end}}.Delete(&{{.Abbreviation}}).Error
+	return global.DB{{range .PathVars }}.Where("{{ if eq (len $.PathVars) 1 }}id{{else}}{{snakecase .}}{{end}} = ?", {{.}}){{- end}}.Delete(&{{.Abbreviation}}).Error
 }
 
 func Update{{.StructName}}({{ .PathVars | join ", " }} int, {{.Abbreviation}} model.{{.StructName}}) (err error) {
@@ -28,7 +28,7 @@ func Update{{.StructName}}({{ .PathVars | join ", " }} int, {{.Abbreviation}} mo
 }
 
 func Get{{.StructName}}({{ .PathVars | join ", " }} int) ({{.Abbreviation}} model.{{.StructName}}, err error) {
-	 err = global.DB{{range .PathVars }}.Where("{{snakecase .}} = ?", {{.}}){{- end}}.First(&{{.Abbreviation}}).Error
+	 err = global.DB{{range .PathVars }}.Where("{{ if eq (len $.PathVars) 1 }}id{{else}}{{snakecase .}}{{end}} = ?", {{.}}){{- end}}.First(&{{.Abbreviation}}).Error
      return
 }
 

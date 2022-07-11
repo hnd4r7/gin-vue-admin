@@ -58,7 +58,6 @@ func Create{{.StructName}}(c *gin.Context) {
 {{- range .PathVars }}
 // @Param {{.}} path int true "{{.}}"
 {{- end }}
-// @Param data body model.{{.StructName}} true "删除{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /api/v1/{{.UrlPath}} [delete]
 func Delete{{.StructName}}(c *gin.Context) {
@@ -143,16 +142,29 @@ func Get{{.StructName}}(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
+{{- range .PathVarsRmLast }}
+// @Param {{.}} path int true "{{.}}"
+{{- end }}
 // @Param data query request.{{.StructName}}Search true "分页获取{{.StructName}}列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/v1/{{.UrlPath}} [get]
+// @Router /api/v1/{{.UrlPathRmLast}} [get]
 func List{{.StructName}} (c *gin.Context) {
+	{{- range .PathVarsRmLast }}
+	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
+	if err != nil {
+		response.FailWithMessage("{{.}}格式错误", err, c)
+		return
+	}
+	{{- end }}
 	var pageInfo request.{{.StructName}}Search
-	err := c.ShouldBindQuery(&pageInfo)
+	err {{ if eq (len .PathVarsRmLast) 0 }}:{{end}}= c.ShouldBindQuery(&pageInfo)
 	if err != nil {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
+	{{- range .PathVarsRmLast }}
+	pageInfo.{{Cap .}} = &{{.}}
+	{{- end }}
 	if list, total, err := service.List{{.StructName}}(pageInfo); err != nil {
 	    global.LOG.Error("获取失败!", zap.Any("err", err))
         response.FailWithMessage("获取失败", err, c)
