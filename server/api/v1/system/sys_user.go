@@ -31,16 +31,23 @@ func (b *BaseApi) Login(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if store.Verify(l.CaptchaId, l.Captcha, true) {
-		u := &system.SysUser{Username: l.Username, Password: l.Password}
-		if err, user := userService.Login(u); err != nil {
-			global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
-			response.FailWithMessage("用户名不存在或者密码错误", c)
-		} else {
-			b.tokenNext(c, *user)
-		}
+	// if store.Verify(l.CaptchaId, l.Captcha, true) {
+	// 	u := &system.SysUser{Username: l.Username, Password: l.Password}
+	// 	if err, user := userService.Login(u); err != nil {
+	// 		global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
+	// 		response.FailWithMessage("用户名不存在或者密码错误", c)
+	// 	} else {
+	// 		b.tokenNext(c, *user)
+	// 	}
+	// } else {
+	// 	response.FailWithMessage("验证码错误", c)
+	// }
+	u := &system.SysUser{Username: l.Username, Password: l.Password}
+	if err, user := userService.Login(u); err != nil {
+		global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
+		response.FailWithMessage("用户名不存在或者密码错误", c)
 	} else {
-		response.FailWithMessage("验证码错误", c)
+		b.tokenNext(c, *user)
 	}
 }
 
