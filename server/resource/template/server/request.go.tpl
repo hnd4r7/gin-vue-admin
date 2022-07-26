@@ -5,6 +5,6 @@ import (
 )
 
 type {{.StructName}}Search struct{
+    *PageInfo
     model.{{.StructName}}
-    PageInfo
 }

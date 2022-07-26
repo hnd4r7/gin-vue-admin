@@ -64,7 +64,7 @@ func List{{.StructName}}(info request.{{.StructName}}Search) (list []*model.{{.S
 	if err!=nil {
     	return
     }
-    if info.Page != -1 {
+    if info.Page != nil {
 		limit := info.PageSize
 		offset := info.PageSize * (info.Page - 1)
 		db = db.Limit(limit).Offset(offset)

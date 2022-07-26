@@ -170,10 +170,9 @@ func List{{.StructName}} (c *gin.Context) {
         response.FailWithMessage("获取失败", err, c)
     } else {
         response.OkWithDetailed(response.PageResult{
+			PageInfo: pageInfo.PageInfo,
             List:     list,
             Total:    total,
-            Page:     pageInfo.Page,
-            PageSize: pageInfo.PageSize,
         }, "获取成功", c)
     }
 }
