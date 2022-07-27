@@ -128,11 +128,11 @@ func Get{{.StructName}}(c *gin.Context) {
 		return
 	}
 	{{- end }}
-	if re{{.Abbreviation}}, err := service.Get{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
+	if {{.Abbreviation}}, err := service.Get{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
         global.LOG.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", err, c)
 	} else {
-		response.OkWithData(gin.H{"re{{.Abbreviation}}": re{{.Abbreviation}}}, c)
+		response.OkWithData(gin.H{"{{.Abbreviation}}": {{.Abbreviation}}}, c)
 	}
 }
 
