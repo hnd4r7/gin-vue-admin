@@ -12,20 +12,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Create{{.StructName}} 创建{{.StructName}}
+// Create{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 创建{{.StructName}}
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-{{- range .PathVarsRmLast }}
+{{- range (RmLast .PathVars) }} 
 // @Param {{.}} path int true "{{.}}"
 {{- end }}
 // @Param data body model.{{.StructName}} true "创建{{.StructName}}"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
-// @Router /api/v1/{{.UrlPathRmLast}} [post]
+// @Router /api/v1/{{ SubstringBeforeLast .UrlPath "/" }} [post]
 func Create{{.StructName}}(c *gin.Context) {
-	{{- range .PathVarsRmLast }}
+	{{- range (RmLast .PathVars) }}
 	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
 	if err != nil {
 		response.FailWithMessage("{{.}}格式错误", err, c)
@@ -33,12 +33,12 @@ func Create{{.StructName}}(c *gin.Context) {
 	}
 	{{- end }}
 	var {{.Abbreviation}} model.{{.StructName}}
-	err {{ if eq (len .PathVarsRmLast) 0 }}:{{end}}= c.ShouldBindJSON(&{{.Abbreviation}})
+	err {{ if eq (len (RmLast .PathVars)) 0 }}:{{end}}= c.ShouldBindJSON(&{{.Abbreviation}})
 	if err != nil {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
-	{{- range .PathVarsRmLast }}
+	{{- range (RmLast .PathVars) }}
 	{{$.Abbreviation}}.{{Cap .}} = &{{.}}
 	{{- end }}
 	if err := service.Create{{.StructName}}({{.Abbreviation}}); err != nil {
@@ -49,7 +49,7 @@ func Create{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Delete{{.StructName}} 删除{{.StructName}}
+// Delete{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 删除{{.StructName}}
 // @Security ApiKeyAuth
@@ -76,7 +76,7 @@ func Delete{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Update{{.StructName}} 更新{{.StructName}}
+// Update{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 更新{{.StructName}}
 // @Security ApiKeyAuth
@@ -110,7 +110,7 @@ func Update{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Get{{.StructName}} 用id查询{{.StructName}}
+// Get{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 用id查询{{.StructName}}
 // @Security ApiKeyAuth
@@ -136,20 +136,20 @@ func Get{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// List{{.StructName}} 分页获取{{.StructName}}列表
+// List{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 分页获取{{.StructName}}列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-{{- range .PathVarsRmLast }}
+{{- range (RmLast .PathVars) }}
 // @Param {{.}} path int true "{{.}}"
 {{- end }}
 // @Param data query request.{{.StructName}}Search true "分页获取{{.StructName}}列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/v1/{{.UrlPathRmLast}} [get]
+// @Router /api/v1/{{ SubstringBeforeLast .UrlPath "/" }} [get]
 func List{{.StructName}} (c *gin.Context) {
-	{{- range .PathVarsRmLast }}
+	{{- range (RmLast .PathVars) }}
 	{{.}}, err := strconv.Atoi(c.Param("{{.}}"))
 	if err != nil {
 		response.FailWithMessage("{{.}}格式错误", err, c)
@@ -157,12 +157,12 @@ func List{{.StructName}} (c *gin.Context) {
 	}
 	{{- end }}
 	var pageInfo request.{{.StructName}}Search
-	err {{ if eq (len .PathVarsRmLast) 0 }}:{{end}}= c.ShouldBindQuery(&pageInfo)
+	err {{ if eq (len (RmLast .PathVars)) 0 }}:{{end}}= c.ShouldBindQuery(&pageInfo)
 	if err != nil {
 		response.FailWithMessage("参数错误", err, c)
 		return
 	}
-	{{- range .PathVarsRmLast }}
+	{{- range (RmLast .PathVars) }}
 	pageInfo.{{Cap .}} = &{{.}}
 	{{- end }}
 	if list, total, err := service.List{{.StructName}}(pageInfo); err != nil {

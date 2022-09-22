@@ -120,7 +120,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath, a.PathVars, a.UrlPathRmLast, a.PathVarsRmLast = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars = ToPath(a.Abbreviation)
 	autoCode, err := autoCodeService.PreviewTemp(a)
 	if err != nil {
 		global.GVA_LOG.Error("预览失败!", zap.Any("err", err))
@@ -130,7 +130,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 	}
 }
 
-func ToPath(abbr string) (url string, pathVars []string, rmLastUrl string, rmLast []string) {
+func ToPath(abbr string) (url string, pathVars []string) {
 	var rawVar []string
 	var offset int
 	for i, r := range abbr {
@@ -161,9 +161,8 @@ func ToPath(abbr string) (url string, pathVars []string, rmLastUrl string, rmLas
 		b2.WriteString(fmt.Sprintf("%s/{%sId}/", str, str))
 	}
 	b2.WriteString(pathVars[len(pathVars)-1])
-	rmLastUrl = strings.TrimSuffix(b2.String(), "/")
 
-	return url, addIdVars, rmLastUrl, addIdVars[:len(addIdVars)-1]
+	return url, addIdVars
 }
 
 // @Tags AutoCode
@@ -181,7 +180,7 @@ func (autoApi *AutoCodeApi) CreateTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath, a.PathVars, a.UrlPathRmLast, a.PathVarsRmLast = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars = ToPath(a.Abbreviation)
 	var apiIds []uint
 	if a.AutoCreateApiToSql {
 		if ids, err := autoCodeService.AutoCreateApi(&a); err != nil {

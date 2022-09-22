@@ -7,7 +7,7 @@ import (
 )
 
 func Init{{.StructName}}Router(Router *gin.RouterGroup) {
-	{{.Abbreviation}}Router := Router.Group("{{ ReplaceCurlyToColon .UrlPathRmLast }}")
+	{{.Abbreviation}}Router := Router.Group("{{ ReplaceCurlyToColon (SubstringBeforeLast .UrlPath "/") }}")
 	{
 		{{.Abbreviation}}Router.GET("{{ ReplaceCurlyToColon (SubstringAfterLast .UrlPath "/")}}", v1.Get{{.StructName}})
 		{{.Abbreviation}}Router.PUT("{{ ReplaceCurlyToColon (SubstringAfterLast .UrlPath "/")}}", v1.Update{{.StructName}})

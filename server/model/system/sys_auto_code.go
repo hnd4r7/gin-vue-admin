@@ -11,8 +11,6 @@ type AutoCodeStruct struct {
 	Abbreviation       string   `json:"abbreviation"`       // Struct简称
 	UrlPath            string   `json:"urlPath"`            // Struct简称
 	PathVars           []string `json:"pathVars"`           // Struct简称
-	UrlPathRmLast      string   `json:"urlPathRmLast"`      // Struct简称
-	PathVarsRmLast     []string `json:"pathVarsRmLast"`     // Struct简称
 	Description        string   `json:"description"`        // Struct中文名称
 	AutoCreateApiToSql bool     `json:"autoCreateApiToSql"` // 是否自动创建api
 	AutoMoveFile       bool     `json:"autoMoveFile"`       // 是否自动移动文件

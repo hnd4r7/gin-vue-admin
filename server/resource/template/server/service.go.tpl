@@ -32,30 +32,30 @@ func Get{{.StructName}}({{ .PathVars | join ", " }} int) ({{.Abbreviation}} mode
      return
 }
 
-func List{{.StructName}}(info request.{{.StructName}}Search) (list []*model.{{.StructName}}, total int64, err error) {
+func List{{.StructName}}(req request.{{.StructName}}Search) (list []*model.{{.StructName}}, total int64, err error) {
 	db := global.DB.Model(&model.{{.StructName}}{})
     var {{.Abbreviation}}s []*model.{{.StructName}}
         {{- range .Fields}}
             {{- if .FieldSearchType}}
                 {{- if eq .FieldType "string" }}
-    if info.{{.FieldName}} != "" {
-        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+ {{ end }}info.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
+    if req.{{.FieldName}} != "" {
+        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+ {{ end }}req.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
     }
                 {{- else if eq .FieldType "bool" }}
-    if info.{{.FieldName}} != nil {
-        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}info.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
+    if req.{{.FieldName}} != nil {
+        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}req.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
     }
                 {{- else if eq .FieldType "int" }}
-    if info.{{.FieldName}} != nil {
-        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}info.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
+    if req.{{.FieldName}} != nil {
+        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}req.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
     }
                 {{- else if eq .FieldType "float64" }}
-    if info.{{.FieldName}} != nil {
-        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}info.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
+    if req.{{.FieldName}} != nil {
+        db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}req.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
     }
                 {{- else if eq .FieldType "time.Time" }}
-    if info.{{.FieldName}} != nil {
-         db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}info.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
+    if req.{{.FieldName}} != nil {
+         db = db.Where("`{{.ColumnName}}` {{.FieldSearchType}} ?",{{if eq .FieldSearchType "LIKE"}}"%"+{{ end }}req.{{.FieldName}}{{if eq .FieldSearchType "LIKE"}}+"%"{{ end }})
     }
                 {{- end }}
         {{- end }}
@@ -64,9 +64,9 @@ func List{{.StructName}}(info request.{{.StructName}}Search) (list []*model.{{.S
 	if err!=nil {
     	return
     }
-    if info.Page != nil {
-		limit := info.PageSize
-		offset := info.PageSize * (info.Page - 1)
+    if req.PageInfo != nil {
+		limit := req.PageSize
+		offset := req.PageSize * (req.Page - 1)
 		db = db.Limit(limit).Offset(offset)
 	}
 	err = db.Find(&{{.Abbreviation}}s).Error

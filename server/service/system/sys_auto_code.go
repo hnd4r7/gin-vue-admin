@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"text/template"
@@ -453,6 +454,13 @@ func (autoCodeService *AutoCodeService) getNeedList(autoCode *system.AutoCodeStr
 				b.Write([]byte(a[1:]))
 				return b.String()
 			},
+			"SubstringBeforeLast": func(str string, sep string) string {
+				idx := strings.LastIndex(str, sep)
+				if idx == -1 {
+					return str
+				}
+				return str[:idx+len(sep)]
+			},
 			"SubstringAfterLast": func(str string, sep string) string {
 				idx := strings.LastIndex(str, sep)
 				if idx == -1 {
@@ -478,6 +486,27 @@ func (autoCodeService *AutoCodeService) getNeedList(autoCode *system.AutoCodeStr
 					}
 				}
 				return b.String()
+			},
+			"RmLast": func(list interface{}) []interface{} {
+				tp := reflect.TypeOf(list).Kind()
+				switch tp {
+				case reflect.Slice, reflect.Array:
+					l2 := reflect.ValueOf(list)
+
+					l := l2.Len()
+					if l == 0 {
+						return nil
+					}
+
+					nl := make([]interface{}, l-1)
+					for i := 0; i < l-1; i++ {
+						nl[i] = l2.Index(i).Interface()
+					}
+
+					return nl
+				default:
+					panic(fmt.Sprintf("Cannot find rest on type %s", tp))
+				}
 			},
 		})
 		dataList[index].template, err = temp.ParseFiles(value.locationPath)
