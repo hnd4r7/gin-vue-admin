@@ -12,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Create{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 创建{{.StructName}}
 // @Security ApiKeyAuth
@@ -49,7 +48,6 @@ func Create{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Delete{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 删除{{.StructName}}
 // @Security ApiKeyAuth
@@ -76,7 +74,6 @@ func Delete{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Update{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 更新{{.StructName}}
 // @Security ApiKeyAuth
@@ -110,7 +107,6 @@ func Update{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// Get{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 用id查询{{.StructName}}
 // @Security ApiKeyAuth
@@ -136,7 +132,6 @@ func Get{{.StructName}}(c *gin.Context) {
 	}
 }
 
-// List{{.StructName}}
 // @Tags {{.StructName}}
 // @Summary 分页获取{{.StructName}}列表
 // @Security ApiKeyAuth

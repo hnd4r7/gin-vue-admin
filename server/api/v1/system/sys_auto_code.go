@@ -120,7 +120,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath, a.PathVars = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars = ToPath(a.Abbreviation, a.SplitUrl)
 	autoCode, err := autoCodeService.PreviewTemp(a)
 	if err != nil {
 		global.GVA_LOG.Error("预览失败!", zap.Any("err", err))
@@ -130,8 +130,14 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 	}
 }
 
-func ToPath(abbr string) (url string, pathVars []string) {
+func ToPath(abbr string, split bool) (url string, pathVars []string) {
 	var rawVar []string
+	if split {
+		url = fmt.Sprintf("%s/{%sId}", ToDash(abbr), abbr)
+		pathVars = []string{fmt.Sprintf("%sId", abbr)}
+		return
+	}
+
 	var offset int
 	for i, r := range abbr {
 		if unicode.IsUpper(r) {
@@ -140,7 +146,6 @@ func ToPath(abbr string) (url string, pathVars []string) {
 		}
 	}
 	rawVar = append(rawVar, abbr[offset:])
-
 	for _, str := range rawVar {
 		pathVars = append(pathVars, strings.TrimSuffix(strings.ToLower(str), "s")) // TODO: Tolower...
 	}
@@ -180,7 +185,7 @@ func (autoApi *AutoCodeApi) CreateTemp(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	a.UrlPath, a.PathVars = ToPath(a.Abbreviation)
+	a.UrlPath, a.PathVars = ToPath(a.Abbreviation, a.SplitUrl)
 	var apiIds []uint
 	if a.AutoCreateApiToSql {
 		if ids, err := autoCodeService.AutoCreateApi(&a); err != nil {
@@ -261,4 +266,29 @@ func (autoApi *AutoCodeApi) GetColumn(c *gin.Context) {
 	} else {
 		response.OkWithDetailed(gin.H{"columns": columns}, "获取成功", c)
 	}
+}
+
+func ToDash(camel string) (dash string) {
+	var b strings.Builder
+	diff := 'a' - 'A'
+	l := len(camel)
+	for i, v := range camel {
+		// A is 65, a is 97
+		if v >= 'a' {
+			b.WriteRune(v)
+			continue
+		}
+		// v is capital letter here
+		// irregard first letter
+		// add underscore if last letter is capital letter
+		// add underscore when previous letter is lowercase
+		// add underscore when next letter is lowercase
+		if (i != 0 || i == l-1) && (          // head and tail
+		(i > 0 && rune(camel[i-1]) >= 'a') || // pre
+			(i < l-1 && rune(camel[i+1]) >= 'a')) { //next
+			b.WriteRune('-')
+		}
+		b.WriteRune(v + diff)
+	}
+	return b.String()
 }

@@ -77,6 +77,14 @@
           </template>
           <el-checkbox v-model="form.autoMoveFile" />
         </el-form-item>
+        <el-form-item>
+          <template #label>
+            <el-tooltip content="注：自动按照大小写切割url" placement="bottom" effect="light">
+              <div> 切割url </div>
+            </el-tooltip>
+          </template>
+          <el-checkbox v-model="form.splitUrl" />
+        </el-form-item>
       </el-form>
     </div>
     <!-- 组件列表 -->
@@ -209,7 +217,8 @@ export default {
         abbreviation: '',
         description: '',
         autoCreateApiToSql: false,
-        autoMoveFile: false,
+        autoMoveFile: true,
+        splitUrl: true,
         fields: []
       },
       rules: {
