@@ -41,7 +41,7 @@ func Create{{.StructName}}(c *gin.Context) {
 	{{$.Abbreviation}}.{{Cap .}} = &{{.}}
 	{{- end }}
 	if err := service.Create{{.StructName}}({{.Abbreviation}}); err != nil {
-        global.LOG.Error("创建失败!", zap.Any("err", err))
+        global.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败", err, c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -67,7 +67,7 @@ func Delete{{.StructName}}(c *gin.Context) {
 	}
 	{{- end }}
 	if err := service.Delete{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
-        global.LOG.Error("删除失败!", zap.Any("err", err))
+        global.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", err, c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -100,7 +100,7 @@ func Update{{.StructName}}(c *gin.Context) {
 		return
 	}
 	if err := service.Update{{.StructName}}({{ .PathVars | join ", " }}, {{.Abbreviation}}); err != nil {
-        global.LOG.Error("更新失败!", zap.Any("err", err))
+        global.Log.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败", err, c)
 	} else {
 		response.OkWithMessage("更新成功", c)
@@ -125,7 +125,7 @@ func Get{{.StructName}}(c *gin.Context) {
 	}
 	{{- end }}
 	if {{.Abbreviation}}, err := service.Get{{.StructName}}({{ .PathVars | join ", " }}); err != nil {
-        global.LOG.Error("查询失败!", zap.Any("err", err))
+        global.Log.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", err, c)
 	} else {
 		response.OkWithData(gin.H{"{{.Abbreviation}}": {{.Abbreviation}}}, c)
@@ -161,7 +161,7 @@ func List{{.StructName}} (c *gin.Context) {
 	pageInfo.{{Cap .}} = &{{.}}
 	{{- end }}
 	if list, total, err := service.List{{.StructName}}(pageInfo); err != nil {
-	    global.LOG.Error("获取失败!", zap.Any("err", err))
+	    global.Log.Error("获取失败!", zap.Any("err", err))
         response.FailWithMessage("获取失败", err, c)
     } else {
         response.OkWithDetailed(response.PageResult{

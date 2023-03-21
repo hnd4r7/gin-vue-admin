@@ -132,7 +132,7 @@ func (autoApi *AutoCodeApi) PreviewTemp(c *gin.Context) {
 
 func ToPath(abbr string, split bool) (url string, pathVars []string) {
 	var rawVar []string
-	if split {
+	if !split {
 		url = fmt.Sprintf("%s/{%sId}", ToDash(abbr), abbr)
 		pathVars = []string{fmt.Sprintf("%sId", abbr)}
 		return

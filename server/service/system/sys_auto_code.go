@@ -459,7 +459,7 @@ func (autoCodeService *AutoCodeService) getNeedList(autoCode *system.AutoCodeStr
 				if idx == -1 {
 					return str
 				}
-				return str[:idx+len(sep)]
+				return str[:idx]
 			},
 			"SubstringAfterLast": func(str string, sep string) string {
 				idx := strings.LastIndex(str, sep)
